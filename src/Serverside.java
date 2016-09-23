@@ -12,13 +12,19 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 import javax.swing.JButton;
@@ -94,7 +100,9 @@ public class Serverside extends JComponent {
 			public void mousePressed(MouseEvent e2) {
 				oldx = e2.getX();
 				oldy = e2.getY();
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 				c2 = new Coordinates(oldx, oldy);
+				c2.setTime(sdf.format(new Date()).toString());
 				c2.setColor(g2.getColor());
 				if (cords.isEmpty()){
 					starttime=System.currentTimeMillis();
@@ -112,7 +120,7 @@ public class Serverside extends JComponent {
 			public void mouseDragged(MouseEvent e1) {
 				nwx = e1.getX();
 				nwy = e1.getY();
-
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 				if (g2 != null) {
 
 					g2.drawLine(oldx, oldy, nwx, nwy);
@@ -122,6 +130,7 @@ public class Serverside extends JComponent {
 
 				}
 				c2 = new Coordinates(e1.getX(), e1.getY());
+				c2.setTime(sdf.format(new Date()).toString());
 				c2.setColor(g2.getColor());
 				Npnt = Npnt + 1;
 				cords.add(c2);
@@ -368,6 +377,7 @@ public class Serverside extends JComponent {
 						System.out.println("Server:Data sent!");
 						dout.flush();
 						ss.close();
+						SaveData();
 						gui.cords.clear();
 					}
 				}
@@ -378,6 +388,28 @@ public class Serverside extends JComponent {
 			}
 		} else {
 			gui.cords.clear();
+		}
+		
+	}
+
+	private void SaveData() {
+		
+		ArrayList<String> lines = new ArrayList<String>();
+		for(Coordinates i :gui.cords){
+			Integer x=i.getX();
+			Integer y=i.getY();
+			String time=i.getTime();
+			lines.add(x.toString()+","+y.toString()+","+time);
+		}
+		try {
+			Files.write(Paths.get("Serversketchdata.txt"),lines,StandardOpenOption.APPEND);
+		} catch (IOException e) {
+			try {
+				Files.write(Paths.get("Serversketchdata.txt"),lines);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 

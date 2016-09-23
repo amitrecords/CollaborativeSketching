@@ -9,6 +9,7 @@ public class Coordinates {
 	private  int x;
 	private  int y;
 	private Color color;
+	private String timest;
 	
 	public Coordinates(int x,int y)
 	{
@@ -42,6 +43,16 @@ public class Coordinates {
 
 	public void setY(int y) {
 		this.y = y;
+	}
+
+	public void setTime(String string) {
+		this.timest= string;
+		
+	}
+
+	public String getTime() {
+		
+		return timest;
 	}
 	
 	
